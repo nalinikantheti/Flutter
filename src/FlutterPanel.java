@@ -9,8 +9,10 @@ public class FlutterPanel extends JPanel {
   private int width;
   private int height;
   private int speed;
+  private int score;
   private ArrayList<Rectangle> columns;
-  private boolean gameOver, started;
+  private boolean started;
+  public boolean gameOver;
   private Random rand;
 
 
@@ -20,6 +22,7 @@ public class FlutterPanel extends JPanel {
     this.width = width;
     this.height = height;
     this.speed = 3;
+    this.score = 0;
     moth = new Rectangle(width / 2 - 10, height / 2 - 10, 20, 20);
     this.columns = new ArrayList<>();
     rand = new Random();
@@ -40,14 +43,18 @@ public class FlutterPanel extends JPanel {
     drawMoth(g);
     showStartScreen(g);
     showEndScreen(g);
+    if (!gameOver && started) {
+      g.setColor(Color.white);
+      g.drawString(String.valueOf(score), width / 2 - 25, 100);
+    }
 
   }
 
   private void showStartScreen(Graphics g) {
     if (!started) {
-      g.setFont(new Font("Arial", 1, 80));
+      g.setFont(new Font("Arial", 1, 60));
       g.setColor(Color.white);
-      g.drawString("Press Any Key to Start!", 25, height / 2);
+      g.drawString("Press Any Key to Start!", 30, height / 2);
     }
   }
 
@@ -59,7 +66,7 @@ public class FlutterPanel extends JPanel {
   }
 
   private void drawMoth(Graphics g) {
-    g.setColor(Color.red);
+    g.setColor(Color.lightGray);
     g.fillRect(moth.x, moth.y, moth.width, moth.height);
   }
 
@@ -74,7 +81,7 @@ public class FlutterPanel extends JPanel {
   }
 
   public void addColumn(boolean start) {
-    int space = 300;
+    int space = 500;
     int width = 100;
     int height = 50 + rand.nextInt(300);
     if (start) {
@@ -107,13 +114,16 @@ public class FlutterPanel extends JPanel {
 
   public void handleCollisions() {
     for (Rectangle col : this.columns) {
+
       if (moth.intersects(col)) {
         gameOver = true;
         moth.x = col.x - moth.width;
       }
     }
-    if (moth.y < 0 || moth.y > height - 120 - moth.height) {
+    if (moth.y < 0) {
       gameOver = true;
+    }
+    if (moth.y >= height - 120 - moth.height) {
       moth.y = this.height - 120 - moth.height;
     }
   }
@@ -127,8 +137,40 @@ public class FlutterPanel extends JPanel {
     }
   }
 
-  public void startGame(){
+  public void startGame() {
     this.started = true;
   }
 
+
+  public void restartGame() {
+    moth = new Rectangle(width / 2 - 10, height / 2 - 10, 20, 20);
+    this.columns.clear();
+    this.score = 0;
+    this.addColumn(true);
+    this.addColumn(true);
+    this.addColumn(true);
+    this.addColumn(true);
+    gameOver = false;
+    started = false;
+  }
+
+  public void flap() {
+    this.moth.width = (int) (moth.width * 1.5);
+  }
+
+  public void unflap() {
+    this.moth.width = (int) (moth.width / 1.5);
+  }
+
+  public void updateScore() {
+    for (int i = 0 ; i < columns.size(); i += 1) {
+      Rectangle col = columns.get(i);
+      if (moth.x + moth.width / 2 == col.x + col.width / 2 - 9
+              && moth.x + moth.width / 2 < col.x + col.width / 2 + 9) {
+        System.out.println(score);
+        System.out.println("BREAK ");
+        score++;
+      }
+    }
+  }
 }

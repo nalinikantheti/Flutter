@@ -24,6 +24,7 @@ public class FlutterFrame extends JFrame implements FlutterGUI{
         listener.actionPerformed(e.getActionCommand());
       }
     };
+
     timer = new Timer(2,  redirect);
     flutter = new FlutterPanel(width, height);
     this.setTitle("•~*:§ FLUTTER §:*~•");
@@ -34,24 +35,8 @@ public class FlutterFrame extends JFrame implements FlutterGUI{
     this.setVisible(true);
     timer.start();
   }
-
   public void repaint(){
     this.flutter.repaint();
-  }
-
-  @Override
-  public void addMoreColumns() {
-    this.flutter.addColumn(false);
-  }
-
-  @Override
-  public void moveColumns() {
-    this.flutter.moveColumns();
-  }
-
-  @Override
-  public void handleCollisions() {
-    this.flutter.handleCollisions();
   }
 
   @Override
@@ -60,15 +45,43 @@ public class FlutterFrame extends JFrame implements FlutterGUI{
   }
 
   @Override
+  public boolean isGameOver() {
+    return this.flutter.gameOver;
+  }
+
+  @Override
+  public void restartGame() {
+    this.flutter.restartGame();
+  }
+
+  @Override
+  public void flap() {
+    this.flutter.flap();
+  }
+
+  @Override
+  public void unflap() {
+    this.flutter.unflap();
+  }
+
+  @Override
   public void setListener(Listener listener) {
     this.listener = listener;
   }
 
-  public void fall(int drop){
-    this.flutter.dropMoth(drop);
-  }
 
   public void setKeyListener(KeyListener kl) {
     this.kl = kl;
+    this.addKeyListener(kl);
+  }
+
+  @Override
+  public void increaseTick(int drop) {
+    flutter.dropMoth(drop);
+    flutter.moveColumns();
+    flutter.addColumn(false);
+    flutter.handleCollisions();
+    flutter.repaint();
+    flutter.updateScore();
   }
 }

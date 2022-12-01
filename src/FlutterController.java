@@ -5,7 +5,6 @@ public class FlutterController implements Listener, KeyListener {
   private FlutterModel model;
   private FlutterGUI gui;
   private int ticks, acceleration;
-
   private boolean started;
 
 
@@ -19,33 +18,42 @@ public class FlutterController implements Listener, KeyListener {
 
   @Override
   public void actionPerformed(String actionCommand) {
-
     if (started) {
       ticks++;
-      if (ticks % 2 == 0 && acceleration < 15 && ticks > 5) {
+      if (ticks % 2 == 0 && acceleration < 8 && ticks > 5) {
         acceleration += 1;
       }
-      gui.fall(acceleration);
-      gui.moveColumns();
-      gui.addMoreColumns();
-      gui.handleCollisions();
-      gui.repaint();
+      gui.increaseTick(acceleration);
     }
   }
 
   @Override
   public void keyTyped(KeyEvent e) {
-
   }
 
   @Override
   public void keyPressed(KeyEvent e) {
-    this.started = true;
-    gui.startGame();
+    if (!started) {
+      this.started = true;
+      gui.startGame();
+    }
+
+    if (started && !gui.isGameOver()) {
+      if (acceleration > 0) {
+        acceleration = 0;
+      }
+      acceleration -= 10;
+    }
+
+    if (gui.isGameOver()){
+      gui.restartGame();
+      this.started = false;
+    }
+    gui.flap();
   }
 
   @Override
   public void keyReleased(KeyEvent e) {
-
+    gui.unflap();
   }
 }
